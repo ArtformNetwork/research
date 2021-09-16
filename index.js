@@ -25,6 +25,8 @@ async function run() {
     const doc = new GoogleSpreadsheet("1PCvrz-kK4FN8iBN0T9GkQSxanmo0bWJ2jdi3GtsbY_Q")
   //const doc = new GoogleSpreadsheet("1iQJ1JTy_UtM3efoGJsJ4MIuxkUfrvq9VnsfjIK1mDPo")
   //log into google spreadsheets
+  console.log(process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL)
+  console.log(process.env.GOOGLE_PRIVATE_KEY)
     await doc.useServiceAccountAuth({
         client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
         private_key: process.env.GOOGLE_PRIVATE_KEY,
