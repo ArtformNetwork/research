@@ -314,7 +314,7 @@ async function method2() {
   //let url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQEiiCJ_MQKk2BVzvTEyeo7LMN19CNuf1kpr5RGosDhL1zsvn54epmqSuXKtKQuMsi5p3t8pHx9B14p/pub?gid=0&single=true&output=csv';
 
   //let url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQEiiCJ_MQKk2BVzvTEyeo7LMN19CNuf1kpr5RGosDhL1zsvn54epmqSuXKtKQuMsi5p3t8pHx9B14p/pub?gid=340655955&single=true&output=csv';
-  let response = await axios.get('http://localhost:8888/data');
+  let response = await axios.get('/data');
   let jsonObject = response.data;
   // ### use CSV from Spreadsheet and save the data as "jsonObject" after loaded (await)
   // ### then pass this string of "jsonObject" into all of those below =>{ }
