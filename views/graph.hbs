@@ -1,0 +1,65 @@
+<html>
+<head>
+
+
+
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+
+    <style>
+        #mynetwork {
+                //width: 600px; 
+            // height: 600px; 
+                flex-basis: 100%;
+                flex: 4;
+                height: 1000px;
+                border: 1px solid lightgray;
+                
+
+            }
+
+        #output {
+        
+        color: white;
+        border: 1px solid white;
+        flex-basis: 100%;
+        flex: 1;
+        padding: 40px;
+        }
+
+        #container {
+        display:flex;
+        }
+
+        #progress {
+            color: white;
+            font-size: 40px;
+            position: absolute;
+            top: 50%;
+            left: 23%;
+        }
+
+    </style>
+</head>
+<body style="background-color:black;">
+        <div class="container">                                    <!-- ###### FORMS HEREEEEE ALL HERE FROM MATERIALIZE-CSS ###### -->
+
+            
+          <input type="text" id="search-terms"/>
+          <button id="search-btn">Search</button>
+          <div id="progress"></div>
+            <div id="container">
+            
+
+            <div id="mynetwork"></div>
+            <div id="output"></div>
+          </div>
+        
+         </div>   
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js" integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.rawgit.com/Keyang/node-csvtojson/d41f44aa/browser/csvtojson.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js" integrity="sha512-XHDcSyqhOoO2ocB7sKOCJEkUjw/pQCJViP1ynpy+EGh/LggzrP6U/V3a++LQTnZT7sCQKeHRyWHfhN2afjXjCg==" crossorigin="anonymous"></script>
+<script src="graph2.js"></script>
+
+</body>
+</html>
