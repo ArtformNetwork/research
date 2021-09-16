@@ -167,7 +167,7 @@ async function run() {
 // start server
 run();
 
-app.listen(8888, function () {
+app.listen(process.env.PORT, function () {
     console.log("Server has started")
 })
 
