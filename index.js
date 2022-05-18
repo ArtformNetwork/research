@@ -36,7 +36,7 @@ async function run() {
       await doc.loadInfo();
     //each app.get is a ROUTE
     app.get('/', function (req, res) {
-        res.send("<h1>shasuhdhb<h/1>")
+        res.send("<h1>Artform Network<h/1>")
     })
 
     app.get('/about-us', function (req, res) {
