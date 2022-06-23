@@ -16,54 +16,59 @@ app.set('view engine', 'hbs')
 app.use(express.static('public'))
 
 //enable express to process form
-app.use( express.urlencoded({
+app.use(express.urlencoded({
     'extended': false
 }))
 
 async function run() {
 
     const doc = new GoogleSpreadsheet("1PCvrz-kK4FN8iBN0T9GkQSxanmo0bWJ2jdi3GtsbY_Q")
-  //const doc = new GoogleSpreadsheet("1iQJ1JTy_UtM3efoGJsJ4MIuxkUfrvq9VnsfjIK1mDPo")
-  //log into google spreadsheets
-  console.log(process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL)
-  console.log(process.env.GOOGLE_PRIVATE_KEY)
+    //const doc = new GoogleSpreadsheet("1iQJ1JTy_UtM3efoGJsJ4MIuxkUfrvq9VnsfjIK1mDPo")
+    //log into google spreadsheets
+    console.log(process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL)
+    console.log(process.env.GOOGLE_PRIVATE_KEY)
     await doc.useServiceAccountAuth({
         client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
         private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/gm, "\n"),
-      });
+    });
 
-      //attempt to retrive info from spreadsheet
-      await doc.loadInfo();
+    //attempt to retrive info from spreadsheet
+    await doc.loadInfo();
     //each app.get is a ROUTE
     app.get('/', function (req, res) {
-        res.send("<h1>Artform Network<h/1>")
-    })
-
-    app.get('/about-us', function (req, res) {
         res.render("index")
     })
 
-    app.get('/test_add', async function(req,res){
+    app.get('/about-us', function (req, res) {
+        res.render("about")
+    })
+
+    app.get('/raw-data', function (req, res) {
+        res.render("rawData")
+    })
+
+    /*
+    app.get('/test_add', async function (req, res) {
         //get the first spreadsheet
-        let sheet =doc.sheetsByIndex[0];
+        let sheet = doc.sheetsByIndex[0];
 
         //add a row in spreadsheet
         //(important:async)
 
         await sheet.addRow({
-            "ID" : "ABC",
-            "Label" : 123
+            "ID": "ABC",
+            "Label": 123
 
         })
-        
+
         await sheet.saveUpdatedCells();
         res.send("rows added")
 
     })
+*/
 
 
-
-    app.get('/data', async function(req,res){
+    app.get('/data', async function (req, res) {
         let sheet = doc.sheetsByIndex[4];
         let rows = await sheet.getRows();
         let output = [];
@@ -112,21 +117,21 @@ async function run() {
         res.send(output)
     })
     */
-    app.get('/survey',function(req,res){
+    app.get('/survey', function (req, res) {
         res.render('show_survey');
 
     })
-    app.post('/survey', async function(req,res){
+    app.post('/survey', async function (req, res) {
         console.log(res);
-        
 
-        let favouriteFood =[];
+
+        let favouriteFood = [];
         //check if the favourites key exist in req.body
-        if (!req.body.favourites){
+        if (!req.body.favourites) {
 
             favouriteFood = [];
 
-        } else if (!Array.isArray(req.body.favourites)){
+        } else if (!Array.isArray(req.body.favourites)) {
 
             favouriteFood = [req.body.favourites]
         } else {
@@ -135,27 +140,29 @@ async function run() {
 
 
 
-    
 
-    let sheet =doc.sheetsByIndex[1];
+
+        let sheet = doc.sheetsByIndex[1];
 
         //add a row in spreadsheet
         //(important:async)
 
         await sheet.addRow({
-            "Name" :req.body.user_name,
-            "Favourite Food" :favouriteFood.join(","), //this is an array, so need to convert to string
-            "Age Group" :req.body.age_group,
-            "Country" :req.body.country,
+            "Artform": req.body.new_artform,
+            "Related Artforms": req.body.related_artform, //this is an array, so need to convert to string
+            "Senses": req.body.senses,
+            "Name": req.body.user_name,
+            "Date added": date,
+            
         })
-        
+
         await sheet.saveUpdatedCells();
-        res.send("rows added")
+        res.send("Thank You! Artform Submitted and will be manually approved.")
 
     })
 
 
-    app.get('/graph',function(req,res){
+    app.get('/graph', function (req, res) {
         res.render('graph');
     })
 
@@ -169,10 +176,12 @@ async function run() {
 // start server
 run();
 
-app.listen(process.env.PORT, function () {
+app.listen(8000, function () {
+//app.listen(process.env.PORT, function () {
     console.log("Server has started")
 })
-
+var today = new Date();
+var date = today.getFullYear()+'/'+(today.getMonth()+1)+'/'+today.getDate();
 // req -> request
 // res-> response
 // a route -> associating a URL to a JavaScript function

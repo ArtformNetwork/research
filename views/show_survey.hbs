@@ -4,34 +4,79 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" 
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+    <style>
+    body {
+        background-color: white;
+      text-align: center;
+      align-items: center;
+      padding: 50px;
+      font-size: 200%;
+
+    }
+
+    font: {
+        size: 50,
+        color: "white",
+        face: "Tahoma",
+      },
+
+.input-field label {
+     color: #FFFFFF;
+   }
+    </style>
+
+
+    <title>Submitting new artforms</title>
 </head>
+
+
+
 <body>
+
+    
     <!--http POST is to write -->
+<div class="row">
+      <div class="grid-example col s12"><span class="flow-text">
+
+
     <form method="POST"> 
-        <label>Name:</label>
-        <input type= "text" name= "user_name">
-        <input type= "submit" value="Submit Survey">
+        <label> <font size="+2">New Artforms:</font> </label>
         <br/>
+        <input type= "text" name= "new_artform">
+        <br/><br/><br/>
 
-    <label>Age group</label>
-    <input type="radio" name= "age_group" value="teenagers"><span>Teenagers</span>
-    <input type="radio" name= "age_group" value="young_adult"><span>Adult</span>
-    <input type="radio" name= "age_group" value="old_folk"><span>Old folks</span>
+        <label><font size="+2"> Related Artforms: </font></label> 
+        <label><font size="+1">(From the database, separate with commas.)</font></label>
+        <br/>
+        <input type= "text" name= "related_artform">
+        
+        <br/><br/><br/>
 
-    <br/>
-    <label>Favourite Food</label>
-    <input type="checkbox" name= "favourites" value="chicken_rice"><span>chicken rice</span>
-    <input type="checkbox" name= "favourites" value="prata"><span>prata</span>
-    <input type="checkbox" name= "favourites" value="oyster"><span>oyster</span>
+        <label><font size="+2">Senses used to appreciate the new artform<font size="+2"></font></label>
+        <br/>
+        <input type= "text" name= "senses">
+
+        <br/><br/><br/>
+
+        <label><font size="+2">Your name: </font></label>
+        <label><font size="+1">(optional)</font></label>
+        <br/>
+        <input type= "text" name= "user_name">
+
+
+        
+<br/><br/><br/>
+<input class="btn waves-effect waves-light btn-large"  type= "submit" value="Submit Artform">
+
+
     </form>
 
-    <br/>
-    <label>Country</label>
-    <select name= "country">
-        <option value="singapore">Singapore </option>
-        <option value="malaysia">Malaysia </option>
+</span></div></div>
 
-    </select>
+
 </body>
 </html>

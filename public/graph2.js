@@ -45,7 +45,7 @@ const sensesLookup = {
 }
 
 
-
+var t0 = performance.now();
 // create an array with nodes
 function drawGraph(nodes, edgesData) {
   //
@@ -64,18 +64,18 @@ function drawGraph(nodes, edgesData) {
     interaction: {
       hover: true,
     },
-    groups:{
+    groups: {
       'adjacent': {
         /*color: {
           background: 'white'
         },*/
-        borderWidth:5
+        borderWidth: 5
       },
       'reverse': {
-       /* color: {
-          background: 'white'
-        },*/
-        borderWidth:5
+        /* color: {
+           background: 'white'
+         },*/
+        borderWidth: 5
       }
     },
 
@@ -86,217 +86,272 @@ function drawGraph(nodes, edgesData) {
       improvedLayout: false
     },
     nodes: {
-      shape: "circle",
+      shape: "dot",
       scaling: {
+        customScalingFunction: function (min, max, total, value) {
+          return value / total;
+        },
         min: 30,
         max: 80,
       },
       font: {
-        size: 5,
+        size: 20,
+        color: "white",
         face: "Tahoma",
       },
-      widthConstraint: 30,
+     // widthConstraint: 30,
     },
     physics: {
       enabled: true,
       // solver: "forceAtlas2Based"
       barnesHut: {
 
-        gravitationalConstant: -50000,
-        centralGravity: 0.005,
-        springLength: 0.025,
-        springConstant: 0.012,
-        damping: 0.5,
-        avoidOverlap: 3
+        gravitationalConstant: -800000,
+        centralGravity: 0.000,
+        springLength: 50,
+        springConstant: 0.03,
+        damping: 0.4,
+        avoidOverlap: 0
       },
       stabilization: {
         iterations: 1000,
         updateInterval: 1
     }
 
+    },
+    interaction: {
+      tooltipDelay: 200,
+      hideEdgesOnDrag: true,
+    },
+
+  };
+
+  network = new vis.Network(container, data, options)
+  console.log("graph drawn")
+
+  // SHOW LODING PROGRESS
+  network.on('stabilizationProgress', function (i) {
+    //console.log(i);
+    document.querySelector(".loadText").innerHTML = (i.iterations / i.total * 100).toFixed(1) + "% - " + "Fetching Artform Database"
+    // remove once loaded
+    if (i.iterations >= 1000) {
+      document.querySelector("#progress").remove();
+      var t1 = performance.now();
+      console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
     }
-  
-};
+    // else if (i.iterations > 935) {
+    //   document.querySelector("#progress").innerHTML = (i.iterations / i.total * 100).toFixed(1) + "% - " + "Artform Network Rendering"
+    // } else if (i.iterations >= 592) {
+    //   document.querySelector("#progress").innerHTML = (i.iterations / i.total * 100).toFixed(1) + "% - " + "Physic Simulations"
+    // } else if (i.iterations >= 469) {
+    //   document.querySelector("#progress").innerHTML = (i.iterations / i.total * 100).toFixed(1) + "% - " + "Linking Nodes"
+    // } else if (i.iterations >= 373) {
+    //   document.querySelector("#progress").innerHTML = (i.iterations / i.total * 100).toFixed(1) + "% - " + "Generating Links"
+    // } else if (i.iterations >= 245) {
+    //   document.querySelector("#progress").innerHTML = (i.iterations / i.total * 100).toFixed(1) + "% - " + "Generating Nodes"
+    // } else if (i.iterations >= 134) {
+    //   document.querySelector("#progress").innerHTML = (i.iterations / i.total * 100).toFixed(1) + "% - " + "Populating Database"
+    // }
+    // else if (i.iterations >= 52) {
+    //   document.querySelector("#progress").innerHTML = (i.iterations / i.total * 100).toFixed(1) + "% - " + "CSV Conversion"
+    // }
+    else if (i.iterations < 1000) {
+      document.querySelector(".loadText").innerHTML = (i.iterations / i.total * 100).toFixed(1) + "% ";
+      function hello() {
+        document.querySelector(".progress").style.top = (100 - (i.iterations / i.total * 100).toFixed(1)) + "% ";
+      }
+      var target = document.querySelector(".loadText");
+
+      var observer = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+          hello()
+        });
+      });
+
+      var config = {
+        childList: true,
+        subtree: true,
+        characterData: true
+      };
+
+      observer.observe(target, config);
+    }
+  })
+
+  $(document).ready(function () {
+
+    // $(".loadText").on("change", function () {
+    //   console.log("done");
+    //   var text = $(this).text();
+    //   console.log(text);
+    // });
+
+  });
+
+  //#### get nodes that was clicked, create the box for node info and the bullet points for the related artforms.
+  let previousGroup = {};
+  network.on("selectNode", function (params) {
 
 
-network = new vis.Network(container, data, options)
-console.log("graph drawn")
+    // reset all the changed nodes to their previous group
+    for (let nodeid in previousGroup) {
+      let node = nodes.get(nodeid);
+      node.group = previousGroup[nodeid];
+      nodes.update(node);
+    }
+    previousGroup = {};
 
-// SHOW LODING PROGRESS
-network.on('stabilizationProgress', function(i){
-  //console.log(i);
-  document.querySelector("#progress").innerHTML = (i.iterations / i.total*100).toFixed(1) + "% - " + "Fetching Artform Database"
-  // remove once loaded
-  if(i.iterations>=1000){
-    document.querySelector("#progress").remove();
-  } else if(i.iterations>935){
-    document.querySelector("#progress").innerHTML = (i.iterations / i.total*100).toFixed(1) + "% - " + "Artform Network Rendering"
-  } else if(i.iterations>=592){
-    document.querySelector("#progress").innerHTML = (i.iterations / i.total*100).toFixed(1) + "% - " + "Physic Simulations"
-  } else if(i.iterations>=469){
-    document.querySelector("#progress").innerHTML = (i.iterations / i.total*100).toFixed(1) + "% - " + "Linking Nodes"
-  } else if(i.iterations>=373){
-    document.querySelector("#progress").innerHTML = (i.iterations / i.total*100).toFixed(1) + "% - " + "Generating Links"
-  } else if(i.iterations>=245){
-    document.querySelector("#progress").innerHTML = (i.iterations / i.total*100).toFixed(1) + "% - " + "Generating Nodes"
-  } else if(i.iterations>=134){
-    document.querySelector("#progress").innerHTML = (i.iterations / i.total*100).toFixed(1) + "% - " + "Populating Database"
-  } else if(i.iterations>=52){
-    document.querySelector("#progress").innerHTML = (i.iterations / i.total*100).toFixed(1) + "% - " + "CSV Conversion"
-  }
-})
 
-//#### get nodes that was clicked, create the box for node info and the bullet points for the related artforms.
-let previousGroup = {};
-network.on("selectNode", function (params) {
+    document.querySelector(".modal-body").innerHTML = "";
+    let divElement = document.createElement('div');
 
-  // reset all the changed nodes to their previous group
-   for (let nodeid in previousGroup) {
-     let node = nodes.get(nodeid);
-     node.group = previousGroup[nodeid];
-     nodes.update(node);
-   }
-   previousGroup = {};
- 
+    let senses = "";
+    let nodeId = params.nodes[0];
+    let artform = artforms[nodeId];
+    if (sensesLookup.hasOwnProperty(artform.Primary_Sense)) {
+      senses = sensesLookup[artform.Primary_Sense];
+    } else {
+      senses = artform.Primary_Sense;
+    }
 
-  document.querySelector("#output").innerHTML = "";
-  let divElement = document.createElement('div');
-
-  let senses = "";
-  let nodeId = params.nodes[0];
-  let artform = artforms[nodeId];
-  if (sensesLookup.hasOwnProperty(artform.Primary_Sense)) {
-    senses = sensesLookup[artform.Primary_Sense];
-  } else {
-    senses = artform.Primary_Sense;
-  }
-
-  divElement.innerHTML = `<div>
+    divElement.innerHTML = `<div>
       <h1 style="color:white; text-align: center;">${reverseLookup[nodeId]}</h1>
-      <h2>Primary Sense: </h2>
-      <p>${senses}</p>
+      <h2 style="color:white;">Primary Sense: </h2>
+      <p style="color:white;">${senses}</p>
     </div>
     `;
 
-  /*
-      let commonSenses = document.createElement('div');
-      let relatedTo = document.createElement('div');
+    /*
+        let commonSenses = document.createElement('div');
+        let relatedTo = document.createElement('div');
+        let unorderedList = document.createElement('ul');
+        let relatedBy = document.createElement('div');
+      */
+    document.querySelector(".modal-body").appendChild(divElement);
+    let adjacents = adjacentMatrix[nodeId];
+    if (Array.isArray(adjacents)) {
       let unorderedList = document.createElement('ul');
-      let relatedBy = document.createElement('div');
-    */
-  document.querySelector("#output").appendChild(divElement);
-  let adjacents = adjacentMatrix[nodeId];
-  if (Array.isArray(adjacents)) {
-    let unorderedList = document.createElement('ul');
-    let header = document.createElement("h2");
-    header.innerHTML = "Related To:"
-    let toUpdate = [];
-    for (let a of adjacents) {
-      // console.log(reverseLookup[a]);
-      // output += reverseLookup[a] + "1\n";
-      unorderedList.innerHTML += "<li>" + reverseLookup[a] + "</li>"
-      let adjNode = nodes.get(a);
-      // save the group before we overrwite
-      previousGroup[a] = adjNode.group;
-      adjNode.group = "adjacent";
-      adjNode.borderWidth = 2;
-      adjNode.color = {
-        'border': 'white',
-        // 'background':'red',
-      }
-      // adjNode.value = 200;
-      //  nodes.update(adjNode);
-       toUpdate.push(adjNode)
-    }
-    nodes.update(toUpdate);
-    // clear everything inside the #output div
-
-    document.querySelector("#output").appendChild(header);
-    document.querySelector("#output").appendChild(unorderedList);
-
-    
-
-
-
-  } else {
-    console.error("Unable to gt adacjents for nodeId = " + nodeId)
-  }
-
-  let reverse = reverseAdjacentMatrix[nodeId];
-  // console.log(reverseAdjacentMatrix)
-  if (Array.isArray(reverse)) {
-    let header = document.createElement("h2");
-    header.innerHTML = "Related By:"
-    let reverseUnorderedList = document.createElement('ul');
-    let toUpdate = [];
-    for (let r of reverse) {
-      reverseUnorderedList.innerHTML += "<li>" + reverseLookup[r] + "</li>";
-      let reverseNode = nodes.get(r);
-      //console.log(reverseNode);
-      previousGroup[r] = reverseNode.group;
-      reverseNode.group = "reverse";
-      reverseNode.borderWidth = 2;
-      reverseNode.color = {
-        'border': 'white',
-        // 'background':'red',
-      }
-      // reverseNode.color = "red";
-      // reverseNode.value = 200;
-      // // reverseNode.label = "HAHAHA";
-      
-      // nodes.update(reverseNode);   
-      toUpdate.push(reverseNode);
-    }
-    nodes.update(toUpdate);
-    console.log(previousGroup);
-    document.querySelector("#output").appendChild(header)
-    document.querySelector("#output").appendChild(reverseUnorderedList);
-  }
-
-
-
-  /*
-    //#### take the node id from click, reverse lookup for the name, and then HTML write onto a html <div> using `(the one beside ~) and the ${} means javascript
-      divElement.innerHTML = `<div>
-        <h1 style="color:white; text-align: center;">${reverseLookup[nodeId]}</h1>
-      </div>
-      `;
-      commonSenses.innerHTML = `<div>
-        <h5 style="color:white;">Common Senses: </h5>
-      </div>
-      `;
-      //#### to add a "related to" text into the information box
-      relatedTo.innerHTML = `<div>
-        <h5 style="color:white;">Related To: </h5>
-      </div>
-      `;
-      relatedBy.innerHTML = `<div>
-        <h5 style="color:white;">Related By: </h5>
-      </div>
-      `;
-    //#### pass the adjacent into the "#output" column at the information box on the right
-      let adjacents = adjacentMatrix[nodeId];
-      let output = "";
-      if (Array.isArray(adjacents)) {
-        for (let a of adjacents) {
+      let header = document.createElement("h2");
+      header.innerHTML = "Related To:"
+      header.style.color = 'white';
+      //    font-family: sans-serif;
+      header.style.fontFamily = 'sans-serif';
+      let toUpdate = [];
+      for (let a of adjacents) {
         // console.log(reverseLookup[a]);
         // output += reverseLookup[a] + "1\n";
-        unorderedList.innerHTML += "<li>" + reverseLookup[a] + "</li>"
-      } 
-      
-      // clear everything inside the #output div
-      document.querySelector("#output").innerHTML = "";
-      document.querySelector("#output").appendChild(divElement);
-      document.querySelector("#output").appendChild(commonSenses);
-      document.querySelector("#output").appendChild(relatedTo);
-      document.querySelector("#output").appendChild(unorderedList);
-      document.querySelector("#output").appendChild(relatedBy);
-      } else {
-        console.error("Unable to gt adacjents for nodeId = " + nodeId)
+        unorderedList.innerHTML += '<li style="color:white;">' + reverseLookup[a] + '</li>'
+        let adjNode = nodes.get(a);
+        // save the group before we overrwite
+        previousGroup[a] = adjNode.group;
+        adjNode.group = "adjacent";
+        adjNode.borderWidth = 2;
+        adjNode.color = {
+          'border': 'white',
+          // 'background':'red',
+        }
+        // adjNode.value = 200;
+        //  nodes.update(adjNode);
+        toUpdate.push(adjNode)
       }
-      */
+      nodes.update(toUpdate);
+      // clear everything inside the #output div
 
-});
+      document.querySelector(".modal-body").appendChild(header);
+      document.querySelector(".modal-body").appendChild(unorderedList);
+
+
+      $(document).ready(function () {
+        // document.querySelector(".modal").classList.add('show');
+        // document.querySelector(".modal").style.display = 'block';
+        $('.modal').addClass('show')
+        $('.modal').css('display', 'block')
+      })
+
+
+
+    } else {
+      console.error("Unable to gt adacjents for nodeId = " + nodeId)
+    }
+
+    let reverse = reverseAdjacentMatrix[nodeId];
+    // console.log(reverseAdjacentMatrix)
+    if (Array.isArray(reverse)) {
+      let header = document.createElement("h2");
+      header.innerHTML = "Related By:"
+      header.style.color = 'white';
+      header.style.fontFamily = 'sans-serif';
+      header.setAttribute('data-aos', 'fade-up')
+      let reverseUnorderedList = document.createElement('ul');
+      let toUpdate = [];
+      for (let r of reverse) {
+        reverseUnorderedList.innerHTML += '<li style="color:white;">' + reverseLookup[r] + "</li>";
+        let reverseNode = nodes.get(r);
+        //console.log(reverseNode);
+        previousGroup[r] = reverseNode.group;
+        reverseNode.group = "reverse";
+        reverseNode.borderWidth = 2;
+        reverseNode.color = {
+          'border': 'white',
+          //'background': 'red',
+        }
+        // reverseNode.color = "red";
+        // reverseNode.value = 200;
+        // // reverseNode.label = "HAHAHA";
+
+        // nodes.update(reverseNode);   
+        toUpdate.push(reverseNode);
+      }
+      nodes.update(toUpdate);
+      console.log(previousGroup);
+      document.querySelector(".modal-body").appendChild(header)
+      document.querySelector(".modal-body").appendChild(reverseUnorderedList);
+    }
+
+
+
+    /*
+      //#### take the node id from click, reverse lookup for the name, and then HTML write onto a html <div> using `(the one beside ~) and the ${} means javascript
+        divElement.innerHTML = `<div>
+          <h1 style="color:white; text-align: center;">${reverseLookup[nodeId]}</h1>
+        </div>
+        `;
+        commonSenses.innerHTML = `<div>
+          <h5 style="color:white;">Common Senses: </h5>
+        </div>
+        `;
+        //#### to add a "related to" text into the information box
+        relatedTo.innerHTML = `<div>
+          <h5 style="color:white;">Related To: </h5>
+        </div>
+        `;
+        relatedBy.innerHTML = `<div>
+          <h5 style="color:white;">Related By: </h5>
+        </div>
+        `;
+      //#### pass the adjacent into the "#output" column at the information box on the right
+        let adjacents = adjacentMatrix[nodeId];
+        let output = "";
+        if (Array.isArray(adjacents)) {
+          for (let a of adjacents) {
+          // console.log(reverseLookup[a]);
+          // output += reverseLookup[a] + "1\n";
+          unorderedList.innerHTML += "<li>" + reverseLookup[a] + "</li>"
+        } 
+        
+        // clear everything inside the #output div
+        document.querySelector("#output").innerHTML = "";
+        document.querySelector("#output").appendChild(divElement);
+        document.querySelector("#output").appendChild(commonSenses);
+        document.querySelector("#output").appendChild(relatedTo);
+        document.querySelector("#output").appendChild(unorderedList);
+        document.querySelector("#output").appendChild(relatedBy);
+        } else {
+          console.error("Unable to gt adacjents for nodeId = " + nodeId)
+        }
+        */
+
+  });
 
 
 } //### END OF function drawGraph
@@ -304,10 +359,10 @@ network.on("selectNode", function (params) {
 
 
 var changeChosenNodeSize = function (values, id, selected, hovering) {
-  values.size = 40;
+  values.size = 100;
 };
 var changeChosenLabelSize = function (values, id, selected, hovering) {
-  values.size += 3;
+  values.size += 10;
 };
 
 async function method2() {
@@ -333,7 +388,7 @@ async function method2() {
     return {
       id: index,
       label: artform.Artform,
-      group: artform.Primary_Sense,      
+      group: artform.Primary_Sense,
       chosen: { label: changeChosenLabelSize, node: changeChosenNodeSize },
     }
   })
@@ -391,7 +446,7 @@ async function method2() {
   //console.log(adjacentMatrix);
 
 
-  console.log("Loading done");
+  // console.log("Loading done");
   // only draw the graph wnen data has been processed
   drawGraph(nodes, edges);
 
@@ -418,5 +473,7 @@ document.querySelector('#search-btn').addEventListener('click', () => {
   network.selectNodes([nodeId]);
 
 })
+
+
 
 method2();
