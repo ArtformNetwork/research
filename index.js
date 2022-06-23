@@ -176,8 +176,8 @@ async function run() {
 // start server
 run();
 
-app.listen(8000, function () {
-//app.listen(process.env.PORT, function () {
+//app.listen(8000, function () {
+app.listen(process.env.PORT, function () {
     console.log("Server has started")
 })
 var today = new Date();
