@@ -1,13 +1,13 @@
-// importing in the express library
+//#### importing in the express library--------------------------
 const express = require('express')
 const { GoogleSpreadsheet } = require('google-spreadsheet');
 require('dotenv').config();
 
 const hbs = require('hbs')
 
-// create the express application
+//#### create the express application----------------------------------
 const app = express();
-// tell express to use hbs as the view engine
+//#### tell express to use hbs as the view engine-----------------------------------
 app.set('view engine', 'hbs')
 // static files
 // the firstt argument is the folder where we put all our static files
@@ -15,7 +15,7 @@ app.set('view engine', 'hbs')
 // - javascripts
 app.use(express.static('public'))
 
-//enable express to process form
+//#### enable express to process form------------------------------------
 app.use(express.urlencoded({
     'extended': false
 }))
@@ -23,8 +23,8 @@ app.use(express.urlencoded({
 async function run() {
 
     const doc = new GoogleSpreadsheet("1PCvrz-kK4FN8iBN0T9GkQSxanmo0bWJ2jdi3GtsbY_Q")
-    //const doc = new GoogleSpreadsheet("1iQJ1JTy_UtM3efoGJsJ4MIuxkUfrvq9VnsfjIK1mDPo")
-    //log into google spreadsheets
+
+//#### log into google spreadsheets-------------------------------------------
     console.log(process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL)
     console.log(process.env.GOOGLE_PRIVATE_KEY)
     await doc.useServiceAccountAuth({
@@ -32,9 +32,9 @@ async function run() {
         private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/gm, "\n"),
     });
 
-    //attempt to retrive info from spreadsheet
+//#### attempt to retrive info from spreadsheet-----------------------------------------
     await doc.loadInfo();
-    //each app.get is a ROUTE
+//#### each app.get is a ROUTE--------------------------------
     app.get('/', function (req, res) {
         res.render("index")
     })
@@ -47,33 +47,16 @@ async function run() {
         res.render("rawData")
     })
 
-    /*
-    app.get('/test_add', async function (req, res) {
-        //get the first spreadsheet
-        let sheet = doc.sheetsByIndex[0];
-
-        //add a row in spreadsheet
-        //(important:async)
-
-        await sheet.addRow({
-            "ID": "ABC",
-            "Label": 123
-
-        })
-
-        await sheet.saveUpdatedCells();
-        res.send("rows added")
-
-    })
-*/
 
 
     app.get('/data', async function (req, res) {
         let sheet = doc.sheetsByIndex[4];
         let rows = await sheet.getRows();
         let output = [];
-        //gothrough each row and extract out the first and last
-        //store in an obket as an array
+
+
+//#### go through each row and extract out the first and last---------------------------
+//#### store in an obket as an array----------------------------------
         for (let r of rows) {
             output.push({
                 'Artform': r.Artform,
@@ -87,36 +70,7 @@ async function run() {
         res.send(output);
     })
 
-    /*
-    app.get('/nodes', async function(req,res){
-        let sheet = doc.sheetsByIndex[0];
-        let rows = await sheet.getRows();
-        let output = [];
-        for (let r of rows){
-            output.push({
-                'id': r.rowIndex-2,
-                'label': r.Artform
-            })
-        }
-        res.send(output)
-
-    })    
-
-    app.get('/connections', async function(req,res){
-        let sheet = doc.sheetsByIndex[0];
-        let rows = await sheet.getRows();
-        let output = [];
-        for (let r of rows){
-            //left hand side of the colon is to match the javascript format
-            //right hand is to match the spreadsheet.
-            output.push({
-                'from': r.rowIndex-2,
-                'to': r.Related_Artforms
-            })
-        }
-        res.send(output)
-    })
-    */
+    
     app.get('/survey', function (req, res) {
         res.render('show_survey');
 
@@ -173,7 +127,7 @@ async function run() {
 }
 
 
-// start server
+//#### start server ----------------------------------------------
 run();
 
 //app.listen(8000, function () {

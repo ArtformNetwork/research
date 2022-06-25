@@ -1,11 +1,13 @@
-let lookupTable = {}; //lookup the new table.
-let reverseLookup = {}; // map ID to artForm name
-let adjacentMatrix = {};// to find nodes related to and from this nodes
+let lookupTable = {}; //#### lookup the new table.-----------------------------
+let reverseLookup = {}; //#### map ID to artForm name-----------------------------
+let adjacentMatrix = {};//#### to find nodes related to and from this nodes-----------------------------
 let reverseAdjacentMatrix = {};
 let network;
 let artforms = [];
 
-const sensesLookup = {
+const sensesLookup = { 
+//#### use the shorten abbrevition from the database to write the respective senses----------------------------- 
+//#### on the popup when an artform was clicked-----------------------------
 
   'VHToTaS': 'Vision, Hearing, Touch, Taste, Smell',
   'HToTaS': 'Hearing, Touch, Taste, Smell',
@@ -39,22 +41,18 @@ const sensesLookup = {
   'Ta': 'Taste',
   'S': 'Smell',
 
-
-
-
 }
 
 
 var t0 = performance.now();
-// create an array with nodes
+//#### CREATE THE NODES -----------------------------
 function drawGraph(nodes, edgesData) {
-  //
-  // create an array with edges
+//#### CREATING ARRAY OF EDGES-----------------------------
   var edges = new vis.DataSet([
     ...edgesData
   ]);
 
-  // create a network
+//#### CREATING NETWORK HERE-----------------------------
   var container = document.getElementById("mynetwork");
   var data = {
     nodes: nodes,
@@ -66,19 +64,13 @@ function drawGraph(nodes, edgesData) {
     },
     groups: {
       'adjacent': {
-        /*color: {
-          background: 'white'
-        },*/
         borderWidth: 5
       },
       'reverse': {
-        /* color: {
-           background: 'white'
-         },*/
         borderWidth: 5
       }
     },
-
+//#### PROPERTIES OF THE NETWORK GRAPH-----------------------------
     edges: {
       smooth: { type: "continuous", enabled: false }
     },
@@ -99,13 +91,12 @@ function drawGraph(nodes, edgesData) {
         color: "white",
         face: "Tahoma",
       },
-     // widthConstraint: 30,
     },
+
+  //#### THE PHYSIC SIMULATION CODE WILL BE OVER HERE-----------------------------
     physics: {
       enabled: true,
-      // solver: "forceAtlas2Based"
       barnesHut: {
-
         gravitationalConstant: -800000,
         centralGravity: 0.000,
         springLength: 50,
@@ -129,32 +120,17 @@ function drawGraph(nodes, edgesData) {
   network = new vis.Network(container, data, options)
   console.log("graph drawn")
 
-  // SHOW LODING PROGRESS
+//#### SHOW LOADING PROGRESS-----------------------------
   network.on('stabilizationProgress', function (i) {
-    //console.log(i);
+
     document.querySelector(".loadText").innerHTML = (i.iterations / i.total * 100).toFixed(1) + "% - " + "Fetching Artform Database"
-    // remove once loaded
+  
     if (i.iterations >= 1000) {
       document.querySelector("#progress").remove();
       var t1 = performance.now();
       console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
     }
-    // else if (i.iterations > 935) {
-    //   document.querySelector("#progress").innerHTML = (i.iterations / i.total * 100).toFixed(1) + "% - " + "Artform Network Rendering"
-    // } else if (i.iterations >= 592) {
-    //   document.querySelector("#progress").innerHTML = (i.iterations / i.total * 100).toFixed(1) + "% - " + "Physic Simulations"
-    // } else if (i.iterations >= 469) {
-    //   document.querySelector("#progress").innerHTML = (i.iterations / i.total * 100).toFixed(1) + "% - " + "Linking Nodes"
-    // } else if (i.iterations >= 373) {
-    //   document.querySelector("#progress").innerHTML = (i.iterations / i.total * 100).toFixed(1) + "% - " + "Generating Links"
-    // } else if (i.iterations >= 245) {
-    //   document.querySelector("#progress").innerHTML = (i.iterations / i.total * 100).toFixed(1) + "% - " + "Generating Nodes"
-    // } else if (i.iterations >= 134) {
-    //   document.querySelector("#progress").innerHTML = (i.iterations / i.total * 100).toFixed(1) + "% - " + "Populating Database"
-    // }
-    // else if (i.iterations >= 52) {
-    //   document.querySelector("#progress").innerHTML = (i.iterations / i.total * 100).toFixed(1) + "% - " + "CSV Conversion"
-    // }
+//#### REMOVE ONCE LODED-----------------------------
     else if (i.iterations < 1000) {
       document.querySelector(".loadText").innerHTML = (i.iterations / i.total * 100).toFixed(1) + "% ";
       function hello() {
@@ -180,20 +156,16 @@ function drawGraph(nodes, edgesData) {
 
   $(document).ready(function () {
 
-    // $(".loadText").on("change", function () {
-    //   console.log("done");
-    //   var text = $(this).text();
-    //   console.log(text);
-    // });
 
   });
 
-  //#### get nodes that was clicked, create the box for node info and the bullet points for the related artforms.
+//#### get nodes that was clicked, create the box for node info --------------------------
+//#### and the bullet points for the related artforms.-----------------------------
   let previousGroup = {};
   network.on("selectNode", function (params) {
 
 
-    // reset all the changed nodes to their previous group
+//#### reset all the changed nodes to their previous group-----------------------------
     for (let nodeid in previousGroup) {
       let node = nodes.get(nodeid);
       node.group = previousGroup[nodeid];
@@ -204,7 +176,7 @@ function drawGraph(nodes, edgesData) {
 
     document.querySelector(".modal-body").innerHTML = "";
     let divElement = document.createElement('div');
-
+//#### WRITE THE SENSES USING THE SENSE LOOKUP-----------------------------
     let senses = "";
     let nodeId = params.nodes[0];
     let artform = artforms[nodeId];
@@ -220,13 +192,7 @@ function drawGraph(nodes, edgesData) {
       <p style="color:white;">${senses}</p>
     </div>
     `;
-
-    /*
-        let commonSenses = document.createElement('div');
-        let relatedTo = document.createElement('div');
-        let unorderedList = document.createElement('ul');
-        let relatedBy = document.createElement('div');
-      */
+//#### WRITE THE "RELATED TO" ON THE POPUP MENU + CHANGE THE NODES COLOR-----------------------------
     document.querySelector(".modal-body").appendChild(divElement);
     let adjacents = adjacentMatrix[nodeId];
     if (Array.isArray(adjacents)) {
@@ -234,36 +200,29 @@ function drawGraph(nodes, edgesData) {
       let header = document.createElement("h2");
       header.innerHTML = "Related To:"
       header.style.color = 'white';
-      //    font-family: sans-serif;
       header.style.fontFamily = 'sans-serif';
       let toUpdate = [];
+
       for (let a of adjacents) {
-        // console.log(reverseLookup[a]);
-        // output += reverseLookup[a] + "1\n";
         unorderedList.innerHTML += '<li style="color:white;">' + reverseLookup[a] + '</li>'
         let adjNode = nodes.get(a);
-        // save the group before we overrwite
+//#### save the group before we overrwite -----------------------------
         previousGroup[a] = adjNode.group;
         adjNode.group = "adjacent";
         adjNode.borderWidth = 2;
         adjNode.color = {
           'border': 'white',
-          // 'background':'red',
         }
-        // adjNode.value = 200;
-        //  nodes.update(adjNode);
         toUpdate.push(adjNode)
       }
       nodes.update(toUpdate);
-      // clear everything inside the #output div
+//#### clear everything inside the #output div-----------------------------
 
       document.querySelector(".modal-body").appendChild(header);
       document.querySelector(".modal-body").appendChild(unorderedList);
 
 
       $(document).ready(function () {
-        // document.querySelector(".modal").classList.add('show');
-        // document.querySelector(".modal").style.display = 'block';
         $('.modal').addClass('show')
         $('.modal').css('display', 'block')
       })
@@ -274,8 +233,9 @@ function drawGraph(nodes, edgesData) {
       console.error("Unable to gt adacjents for nodeId = " + nodeId)
     }
 
+
+//#### WRITE THE "RELATED BY" ON THE POPUP MENU + CHANGE THE NODES COLOR-----------------------------
     let reverse = reverseAdjacentMatrix[nodeId];
-    // console.log(reverseAdjacentMatrix)
     if (Array.isArray(reverse)) {
       let header = document.createElement("h2");
       header.innerHTML = "Related By:"
@@ -287,19 +247,13 @@ function drawGraph(nodes, edgesData) {
       for (let r of reverse) {
         reverseUnorderedList.innerHTML += '<li style="color:white;">' + reverseLookup[r] + "</li>";
         let reverseNode = nodes.get(r);
-        //console.log(reverseNode);
         previousGroup[r] = reverseNode.group;
         reverseNode.group = "reverse";
         reverseNode.borderWidth = 2;
         reverseNode.color = {
           'border': 'white',
-          //'background': 'red',
         }
-        // reverseNode.color = "red";
-        // reverseNode.value = 200;
-        // // reverseNode.label = "HAHAHA";
 
-        // nodes.update(reverseNode);   
         toUpdate.push(reverseNode);
       }
       nodes.update(toUpdate);
@@ -309,52 +263,10 @@ function drawGraph(nodes, edgesData) {
     }
 
 
-
-    /*
-      //#### take the node id from click, reverse lookup for the name, and then HTML write onto a html <div> using `(the one beside ~) and the ${} means javascript
-        divElement.innerHTML = `<div>
-          <h1 style="color:white; text-align: center;">${reverseLookup[nodeId]}</h1>
-        </div>
-        `;
-        commonSenses.innerHTML = `<div>
-          <h5 style="color:white;">Common Senses: </h5>
-        </div>
-        `;
-        //#### to add a "related to" text into the information box
-        relatedTo.innerHTML = `<div>
-          <h5 style="color:white;">Related To: </h5>
-        </div>
-        `;
-        relatedBy.innerHTML = `<div>
-          <h5 style="color:white;">Related By: </h5>
-        </div>
-        `;
-      //#### pass the adjacent into the "#output" column at the information box on the right
-        let adjacents = adjacentMatrix[nodeId];
-        let output = "";
-        if (Array.isArray(adjacents)) {
-          for (let a of adjacents) {
-          // console.log(reverseLookup[a]);
-          // output += reverseLookup[a] + "1\n";
-          unorderedList.innerHTML += "<li>" + reverseLookup[a] + "</li>"
-        } 
-        
-        // clear everything inside the #output div
-        document.querySelector("#output").innerHTML = "";
-        document.querySelector("#output").appendChild(divElement);
-        document.querySelector("#output").appendChild(commonSenses);
-        document.querySelector("#output").appendChild(relatedTo);
-        document.querySelector("#output").appendChild(unorderedList);
-        document.querySelector("#output").appendChild(relatedBy);
-        } else {
-          console.error("Unable to gt adacjents for nodeId = " + nodeId)
-        }
-        */
-
   });
 
 
-} //### END OF function drawGraph
+} //### END OF function drawGraph-----------------------------
 
 
 
@@ -366,23 +278,16 @@ var changeChosenLabelSize = function (values, id, selected, hovering) {
 };
 
 async function method2() {
-  //let url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQEiiCJ_MQKk2BVzvTEyeo7LMN19CNuf1kpr5RGosDhL1zsvn54epmqSuXKtKQuMsi5p3t8pHx9B14p/pub?gid=0&single=true&output=csv';
-
-  //let url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQEiiCJ_MQKk2BVzvTEyeo7LMN19CNuf1kpr5RGosDhL1zsvn54epmqSuXKtKQuMsi5p3t8pHx9B14p/pub?gid=340655955&single=true&output=csv';
   let response = await axios.get('/data');
   let jsonObject = response.data;
-  // ### use CSV from Spreadsheet and save the data as "jsonObject" after loaded (await)
-  // ### then pass this string of "jsonObject" into all of those below =>{ }
-  // csv().fromString(response.data).then((jsonObject) => {
-  // for (let j of jsonObject) {
-  //   console.log(j)
-  // }
+  // ### use CSV from Spreadsheet and save the data as "jsonObject" after loaded (await)-----------------------------
+  // ### then pass this string of "jsonObject" into all of those below =>{ }-----------------------------
+
   console.log(jsonObject);
   artforms = jsonObject;
 
-  //### getNodes()(function) from "jsonObject" passed from CSV of spreadsheet
-  //### Map the id and label as "index" and "artform"
-  // console.log(jsonObject);
+  //### getNodes()(function) from "jsonObject" passed from CSV of spreadsheet-----------------------------
+  //### Map the id and label as "index" and "artform"-----------------------------
   let nodeNamesArray = getNodes(jsonObject);
   let nodes = nodeNamesArray.map((artform, index) => {
     return {
@@ -396,7 +301,7 @@ async function method2() {
   nodes = new vis.DataSet([...nodes]);
 
 
-  // ### lookupTable = retrive the information from this node array
+  // ### lookupTable = retrive the information from this node array-----------------------------
   lookupTable = {};
   reverseLookup = {};
   for (let i = 0; i < nodeNamesArray.length; i++) {
@@ -404,7 +309,7 @@ async function method2() {
     lookupTable[node.Artform.toLowerCase()] = i;
     reverseLookup[i] = node.Artform;
   }
-  // ####DRAW THE EDGES = for each artform within jsonObject, take the "Related_Artforms" column, split it using commas and push it individually(...)into edges(edges.push)
+  // ####DRAW THE EDGES = for each artform within jsonObject, take the "Related_Artforms" column, split it using commas and push it individually(...)into edges(edges.push)-----------------------------
   let edges = [];
   for (let artform of jsonObject) {
     let related = artform.Related_Artforms.split(",")
@@ -419,11 +324,11 @@ async function method2() {
     edges.push(...related);
 
   }
-  //console.log(edges);
 
-  //### create related.
+
+  //### create related.-----------------------------
   for (let j of jsonObject) {
-    //#### id of the current node represented by the j, split, trim spaces, remove null and lowercase all
+    //#### id of the current node represented by the j, split, trim spaces, remove null and lowercase all-----------------------------
     let nodeId = lookupTable[j.Artform.toLowerCase()];
     let related = j.Related_Artforms.split(",")
       .map(s => s.trim())
@@ -431,10 +336,10 @@ async function method2() {
       .map(related => {
         return lookupTable[related.toLowerCase()] || -1;
       })
-    // filter all the 0s
+    // filter all the 0s-----------------------------
     let adjacents = [...related].filter(f => f != -1);
     adjacentMatrix[nodeId] = adjacents;
-    //#### Create related By
+    //#### Create related By-----------------------------
     for (let a of adjacents) {
       if (!reverseAdjacentMatrix[a]) {
         reverseAdjacentMatrix[a] = [];
@@ -443,28 +348,28 @@ async function method2() {
     }
 
   }
-  //console.log(adjacentMatrix);
 
 
-  // console.log("Loading done");
-  // only draw the graph wnen data has been processed
+
+
+  // only draw the graph wnen data has been processed-----------------------------
   drawGraph(nodes, edges);
 
   // })
 
 }
-//####### FUNCTION that uses Set() which remove repeated items in the "Artform" column.
+//####### FUNCTION that uses Set() which remove repeated items in the "Artform" column.-----------------------------
 function getNodes(artforms) {
   let artformArray = artforms.map(a => { return { Artform: a.Artform, Primary_Sense: a.Primary_Sense } });
-  // Set will automatically discard repeated values
+  // Set will automatically discard repeated values-----------------------------
   return [...new Set(artformArray)]
 
 
 }
 
 
-//#### search, look up the table after new Set(remove duplicate)
-//#### assign all text to lower case, search, zoom in with animation to that node.
+//#### search, look up the table after new Set(remove duplicate)-----------------------------
+//#### assign all text to lower case, search, zoom in with animation to that node.-----------------------------
 
 document.querySelector('#search-btn').addEventListener('click', () => {
 
