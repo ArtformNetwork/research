@@ -89,7 +89,7 @@ function drawGraph(nodes, edgesData) {
       font: {
         size: 20,
         color: "white",
-        face: "Tahoma",
+        face: "Helvetica",
       },
     },
 
@@ -187,8 +187,8 @@ function drawGraph(nodes, edgesData) {
     }
 
     divElement.innerHTML = `<div>
-      <h1 style="color:white; text-align: center;">${reverseLookup[nodeId]}</h1>
-      <h2 style="color:white;">Primary Sense: </h2>
+      <h1 style="color:white; text-align: center; margin-bottom: 30px; text-decoration: underline; font-weight: bold;">${reverseLookup[nodeId]}</h1>
+      <h2 style="color:white; margin-top: 55px; font-size: 25px; text-decoration: underline; ">Primary Sense: </h2>
       <p style="color:white;">${senses}</p>
     </div>
     `;
@@ -198,9 +198,14 @@ function drawGraph(nodes, edgesData) {
     if (Array.isArray(adjacents)) {
       let unorderedList = document.createElement('ul');
       let header = document.createElement("h2");
-      header.innerHTML = "Related To:"
+      header.innerHTML = `<div> 
+      <h2 style="color:white; margin-top: 45px; font-size: 25px; text-decoration: underline; ">Related To </h2>
+      </div>
+      `;
       header.style.color = 'white';
-      header.style.fontFamily = 'sans-serif';
+      header.style.fontFamily = 'Helvetica';
+      header.setAttribute('data-aos', 'fade-up');
+      
       let toUpdate = [];
 
       for (let a of adjacents) {
@@ -238,14 +243,19 @@ function drawGraph(nodes, edgesData) {
     let reverse = reverseAdjacentMatrix[nodeId];
     if (Array.isArray(reverse)) {
       let header = document.createElement("h2");
-      header.innerHTML = "Related By:"
+      header.innerHTML = `<div> 
+      <h2 style="color:white; margin-top: 45px; font-size: 25px; text-decoration: underline; ">Related By: </h2>
+      </div>
+      `;
       header.style.color = 'white';
-      header.style.fontFamily = 'sans-serif';
+      header.style.fontFamily = 'Helvetica';
       header.setAttribute('data-aos', 'fade-up')
+      
       let reverseUnorderedList = document.createElement('ul');
       let toUpdate = [];
       for (let r of reverse) {
         reverseUnorderedList.innerHTML += '<li style="color:white;">' + reverseLookup[r] + "</li>";
+        reverseUnorderedList.setAttribute('data-aos', 'fade-up');
         let reverseNode = nodes.get(r);
         previousGroup[r] = reverseNode.group;
         reverseNode.group = "reverse";
